@@ -380,7 +380,6 @@
     border: 1px solid var(--glass-border);
     position: relative;
     opacity: 1;
-    /* Transición suave y lenta de opacidad (desvanecimiento sutil) */
     transition: opacity 0.8s ease-in-out;
   }
 
@@ -566,13 +565,19 @@
     text-overflow: ellipsis;
   }
 
+  /* =========================================================
+     AJUSTE DE MEDIDA Y POSICIÓN DE LA TARJETA DE PERFIL (PROFILE)
+     ========================================================= */
   .notes-card {
     flex: 1;
+    width: 100%;              /* Ocupa el ancho completo de su columna grid */
+    max-width: 135px;         /* Anchura controlada y armónica */
+    margin: 50 auto;           /* Centrada horizontalmente en su espacio */
     background: var(--glass-card);
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(12px);
     border-radius: 12px;
-    padding: 8px 6px;
+    padding: 8px 6px;         /* Espaciado interno equilibrado */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -580,9 +585,10 @@
     text-align: center;
     color: var(--text-main);
   }
+
   .notes-avatar {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background-image: var(--avatar-photo);
     background-size: cover;
@@ -595,9 +601,9 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--glass-border);
     color: var(--text-main);
-    padding: 4px 0;
-    border-radius: 8px;
-    font-size: 8px;
+    padding: 3px 0;
+    border-radius: 6px;
+    font-size: 7.5px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s, transform 0.2s, border-color 0.2s;
@@ -736,7 +742,7 @@
           <a class="notif-item" href="https://xat.me/zSovereign" target="_blank" rel="noopener">
             <div><strong></strong><span class="sub">@Renzo: Paspada</span></div>
           </a>
-          <a class="notif-item" href="https://xat.me/schroederz" target="_blank" rel="noopener">
+          <a class="notif-item" href="https://x.me/schroederz" target="_blank" rel="noopener">
             <div><strong></strong><span class="sub">@Mytos: Gabumon</span></div>
           </a>
           <a class="notif-item" href="https://xat.me/Frieren" target="_blank" rel="noopener">
