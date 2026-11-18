@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Moa</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+  :root {
+    /* Tu fotografía principal de fondo y tarjeta central */
+    --hero-photo: url('https://i.ibb.co/YP1yGN6/image.png');
+    /* Reemplaza por tu avatar y mini-fotos */
+    --avatar-photo: url('https://i.ibb.co/rfH5zs1/13213.png');
+    --mini-1: url('https://i.ibb.co/XWngWj9/212.png');
+    --mini-2: url('https://i.ibb.co/Gk1QDpH/12.png');
+
+    /* Paleta Dark Mode (Predeterminada: Cristal ahumado oscuro) */
+    --bg-overlay: rgba(16, 14, 13, 0.80);
+    --top-strip: rgba(24, 22, 20, 0.94);
+    --glass-card: rgba(32, 29, 27, 0.76);
+    --glass-pill: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.14);
+    --text-main: #f5f5f4;
+    --text-muted: #a8a29e;
+    --accent-green: #2c2c2c;
+    --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Paleta Light / Warm Glass Mode */
+  body.light-theme {
+    --bg-overlay: rgba(82, 71, 61, 0.56);
+    --top-strip: rgba(244, 241, 238, 0.92);
+    --glass-card: rgba(110, 96, 84, 0.45);
+    --glass-pill: rgba(255, 255, 255, 0.22);
+    --glass-border: rgba(255, 255, 255, 0.28);
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.78);
+    --shadow-soft: 0 16px 36px rgba(0, 0, 0, 0.28);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden; /* Bloqueo total de scroll */
+    background-color: #12100e;
+    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    position: fixed;
+    inset: 0;
+  }
+
+  /* --- FONDO DESENFOCADO AL 100% DEL VIEWPORT --- */
+  .app-viewport {
+    position: relative;
+    width: 100vw;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .bg-blurred-photo {
+    position: absolute;
+    inset: -20px;
+    background-image: var(--hero-photo);
+    background-size: cover;
+    background-position: center;
+    filter: blur(22px) brightness(0.7);
+    z-index: 1;
+  }
+
+  .bg-tint-layer {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-overlay);
+    z-index: 2;
+    transition: background 0.35s ease;
+  }
+
+  /* --- BARRA SUPERIOR FINA --- */
+  .top-credits-bar {
+    position: relative;
+    height: 30px;
+    width: 100%;
+    background: var(--top-strip);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: center;
+    z-index: 20;
+    flex-shrink: 0;
+  }
+
+  .top-bar-inner {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .credit-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+  body.light-theme .credit-left { color: #3f3f46; }
+
+  .pin-badge {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #18181b;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+  }
+
+  .theme-switch-btn {
+    background: var(--glass-pill);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 8.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  body.light-theme .theme-switch-btn { color: #18181b; border-color: rgba(0,0,0,0.2); }
+  .theme-switch-btn:hover { transform: scale(1.05); }
+
+  /* =========================================================
+     CONTENEDOR GENERAL (MÓVIL Y PC COMPACTO CON MARGEN INFERIOR)
+     ========================================================= */
+  .bento-container {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 10px 14px 24px; /* Margen inferior para dejar aire en PC y móvil */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.55);
+    padding-bottom: 4px;
+    color: var(--text-main);
+    font-size: 10.5px;
+  }
+  .nav-links {
+    display: flex;
+    gap: 14px;
+  }
+  .nav-links span {
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+  }
+  .nav-links span:hover, .nav-links span.active {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .profile-search-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 7px;
+    margin-top: 2px;
+  }
+
+  .profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-main);
+  }
+  .avatar-sq {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background-color: #27272a;
+    background-image: var(--avatar-photo);
+    background-size: cover;
+    background-position: center;
+    border: 1.5px solid var(--glass-border);
+    flex-shrink: 0;
+  }
+  .profile-identity h2 {
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .profile-identity p {
+    font-size: 8.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .kr-pill-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-main);
+    margin-left: auto;
+  }
+  .kr-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .tag-pills {
+    background: var(--glass-pill);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    padding: 3.5px 10px;
+    border-radius: 20px;
+    display: flex;
+    gap: 8px;
+    font-size: 8.5px;
+    color: var(--text-muted);
+  }
+  .tag-pills span { cursor: pointer; }
+  .tag-pills span:hover { color: var(--text-main); }
+
+  .search-and-thumbs {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .search-box {
+    flex: 1;
+    background: var(--glass-pill);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 5px 12px;
+    display: flex;
+    align-items: center;
+  }
+  .search-box input {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 10px;
+    width: 100%;
+    outline: none;
+  }
+  .search-box input::placeholder { color: var(--text-muted); }
+
+  .mini-cards {
+    display: flex;
+    gap: 6px;
+  }
+  .mini-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background-color: #27272a;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--glass-border);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .mini-thumb:hover { transform: scale(1.06); }
+  .mini-thumb.m1 { background-image: var(--mini-1); }
+  .mini-thumb.m2 { background-image: var(--mini-2); }
+  .mini-thumb::after {
+    content: '↘';
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .center-hero-stage {
+    position: relative;
+    flex: 1;
+    max-height: 43vh;
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .hero-photo-card {
+    width: 63%;
+    height: 100%;
+    border-radius: 20px;
+    background-color: #292524;
+    background-image: var(--hero-photo);
+    background-size: cover;
+    background-position: center 22%;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--glass-border);
+    position: relative;
+  }
+
+  .spotify-float-widget {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 15;
+  }
+
+  .spotify-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ffffff;
+    font-size: 14.5px;
+    font-weight: 700;
+    padding-left: 4px;
+    margin-bottom: 1px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+  .sp-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #18181b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+  }
+
+  .song-pill {
+    background: rgba(24, 22, 21, 0.84);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    cursor: pointer;
+    transition: transform 0.18s, border-color 0.18s, background 0.18s;
+  }
+  .song-pill:hover {
+    transform: translateX(-3px);
+    border-color: var(--accent-green);
+  }
+  .song-pill.playing {
+    background: rgba(30, 215, 96, 0.22);
+    border-color: var(--accent-green);
+  }
+
+  .sp-cover {
+    width: 21px;
+    height: 21px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, #52525b, #18181b);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #fff;
+  }
+  .sp-meta {
+    flex: 1;
+    overflow: hidden;
+  }
+  .sp-meta strong {
+    display: block;
+    font-size: 8.8px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sp-meta span {
+    display: block;
+    font-size: 7px;
+    color: rgba(255, 255, 255, 0.65);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sp-play-ico {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #18181b;
+    font-size: 7.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .bottom-bento-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.95fr 1.05fr;
+    gap: 8px;
+    height: 23vh;
+    min-height: 120px;
+  }
+
+  .bento-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    min-height: 0;
+  }
+  .col-label {
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .col-label strong { color: var(--text-main); }
+
+  /* --- EFECTO LOOP Y REDIRECCIÓN EN NOTIF-ITEM --- */
+  .notif-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+  .notif-item {
+    background: var(--glass-card);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 9px;
+    padding: 3.5px 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 8px;
+    color: var(--text-main);
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    pointer-events: none;
+    transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s, background 0.2s;
+  }
+  .notif-item.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .notif-item.visible:hover {
+    border-color: var(--accent-green);
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateX(2px);
+  }
+  .notif-item > div {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .notif-item span.sub {
+    display: block;
+    font-size: 6.8px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .notes-card {
+    flex: 1;
+    background: var(--glass-card);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 7px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    color: var(--text-main);
+  }
+  .notes-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-image: var(--avatar-photo);
+    background-size: cover;
+    background-position: center;
+    border: 1.5px solid #fff;
+  }
+  .notes-stats {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 3px;
+    font-size: 6.5px;
+  }
+  .notes-stats strong { display: block; font-size: 8.5px; }
+
+  .explanation-stack {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+  }
+  .msg-bubble-card {
+    background: var(--glass-card);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    padding: 5px 8px;
+    font-size: 8px;
+    line-height: 1.3;
+    color: var(--text-main);
+  }
+  .msg-bubble-card.bio {
+    flex: 1;
+    font-size: 7px;
+    line-height: 1.25;
+    color: var(--text-muted);
+    overflow: hidden;
+  }
+
+  /* Toast aviso */
+  #toast {
+    position: fixed;
+    top: 38px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-40px);
+    background: rgba(18, 16, 14, 0.94);
+    border: 1px solid var(--accent-green);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 9.5px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
