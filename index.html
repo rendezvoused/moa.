@@ -8,14 +8,11 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@400;700&display=swap');
 
   :root {
-    /* Tu fotografía principal de fondo y tarjeta central */
     --hero-photo: url('https://i.ibb.co/YP1yGN6/image.png');
-    /* Reemplaza por tu avatar y mini-fotos */
     --avatar-photo: url('https://i.ibb.co/rfH5zs1/13213.png');
     --mini-1: url('https://i.ibb.co/XWngWj9/212.png');
     --mini-2: url('https://i.ibb.co/Gk1QDpH/12.png');
 
-    /* Paleta Dark Mode (Predeterminada: Cristal ahumado oscuro) */
     --bg-overlay: rgba(16, 14, 13, 0.80);
     --top-strip: rgba(24, 22, 20, 0.94);
     --glass-card: rgba(32, 29, 27, 0.76);
@@ -27,7 +24,6 @@
     --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.65);
   }
 
-  /* Paleta Light / Warm Glass Mode */
   body.light-theme {
     --bg-overlay: rgba(82, 71, 61, 0.56);
     --top-strip: rgba(244, 241, 238, 0.92);
@@ -50,14 +46,13 @@
   html, body {
     width: 100%;
     height: 100dvh;
-    overflow: hidden; /* Bloqueo total de scroll */
+    overflow: hidden;
     background-color: #12100e;
     font-family: 'Inter', 'Noto Sans KR', sans-serif;
     position: fixed;
     inset: 0;
   }
 
-  /* --- FONDO DESENFOCADO AL 100% DEL VIEWPORT --- */
   .app-viewport {
     position: relative;
     width: 100vw;
@@ -147,7 +142,117 @@
   .theme-switch-btn:hover { transform: scale(1.05); }
 
   /* =========================================================
-     CONTENEDOR GENERAL (MÓVIL Y PC COMPACTO CON MARGEN INFERIOR)
+     PANTALLA 1: TRANSICIÓN SIGN IN (FLOTANTE)
+     ========================================================= */
+  #welcomeScreen {
+    position: absolute;
+    inset: 30px 0 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+    padding: 14px;
+    transition: opacity 0.3s ease;
+  }
+
+  .welcome-card {
+    background: var(--glass-card);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: var(--text-main);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    position: relative;
+    animation: floatCard 4s ease-in-out infinite;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .welcome-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-image: var(--avatar-photo);
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #fff;
+    margin-bottom: 12px;
+  }
+
+  .welcome-card h2 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .welcome-card p {
+    font-size: 9.5px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .signin-btn {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 9px 0;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  }
+  .signin-btn:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: #fff;
+    transform: scale(1.02);
+  }
+
+  /* Animación de partículas saliendo (Desintegración al Sign In) */
+  .particle-out {
+    position: absolute;
+    background: rgba(245, 245, 244, 0.85);
+    pointer-events: none;
+    border-radius: 50%;
+    animation: disintegrateFly 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 40;
+  }
+
+  @keyframes disintegrateFly {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.8) rotate(45deg); }
+  }
+
+  /* Animación de partículas entrando (Integración al Sign Out) */
+  .particle-in {
+    position: absolute;
+    background: rgba(245, 245, 244, 0.85);
+    pointer-events: none;
+    border-radius: 50%;
+    animation: integrateFly 0.8s forwards cubic-bezier(0, 0.5, 0.5, 1);
+    z-index: 40;
+  }
+
+  @keyframes integrateFly {
+    0% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(45deg); }
+    100% { opacity: 1; transform: translate(0, 0) scale(1); }
+  }
+
+  /* =========================================================
+     PANTALLA 2: CONTENEDOR GENERAL BENTO (OCULTO AL INICIO)
      ========================================================= */
   .bento-container {
     position: relative;
@@ -155,13 +260,23 @@
     width: 100%;
     max-width: 480px;
     margin: 0 auto;
-    padding: 10px 14px 28px; /* Margen inferior controlado para dejar aire */
+    padding: 10px 14px 28px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 6px;
     z-index: 10;
     overflow: hidden;
+    opacity: 0;
+    transform: scale(0.97);
+    transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    pointer-events: none;
+  }
+
+  .bento-container.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
   }
 
   .nav-header {
@@ -187,70 +302,6 @@
     text-decoration: underline;
     text-underline-offset: 4px;
   }
-
-  .profile-search-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 7px;
-    margin-top: 2px;
-  }
-
-  .profile-identity {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-main);
-  }
-  .avatar-sq {
-    width: 42px;
-    height: 42px;
-    border-radius: 9px;
-    background-color: #27272a;
-    background-image: var(--avatar-photo);
-    background-size: cover;
-    background-position: center;
-    border: 1.5px solid var(--glass-border);
-    flex-shrink: 0;
-  }
-  .profile-identity h2 {
-    font-size: 11.5px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .profile-identity p {
-    font-size: 8.5px;
-    color: var(--text-muted);
-    white-space: nowrap;
-  }
-
-  .kr-pill-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-main);
-    margin-left: auto;
-  }
-  .kr-name {
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-  }
-  .tag-pills {
-    background: var(--glass-pill);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    padding: 3.5px 10px;
-    border-radius: 20px;
-    display: flex;
-    gap: 8px;
-    font-size: 8.5px;
-    color: var(--text-muted);
-  }
-  .tag-pills span { cursor: pointer; }
-  .tag-pills span:hover { color: var(--text-main); }
 
   .search-and-thumbs {
     width: 100%;
@@ -323,12 +374,14 @@
     height: 100%;
     border-radius: 20px;
     background-color: #292524;
-    background-image: var(--hero-photo);
     background-size: cover;
     background-position: center 22%;
     box-shadow: var(--shadow-soft);
     border: 1px solid var(--glass-border);
     position: relative;
+    opacity: 1;
+    /* Transición suave y lenta de opacidad (desvanecimiento sutil) */
+    transition: opacity 0.8s ease-in-out;
   }
 
   .spotify-float-widget {
@@ -441,7 +494,7 @@
     gap: 8px;
     height: 21vh;
     min-height: 110px;
-    margin-bottom: 8px; /* Margen inferior para que no lleguen al fondo */
+    margin-bottom: 8px;
   }
 
   .bento-col {
@@ -463,7 +516,6 @@
   }
   .col-label strong { color: var(--text-main); }
 
-  /* --- EFECTO LOOP Y REDIRECCIÓN EN NOTIF-ITEM --- */
   .notif-stack {
     display: flex;
     flex-direction: column;
@@ -520,7 +572,7 @@
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(12px);
     border-radius: 12px;
-    padding: 11px 1px;
+    padding: 8px 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -529,23 +581,32 @@
     color: var(--text-main);
   }
   .notes-avatar {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background-image: var(--avatar-photo);
     background-size: cover;
     background-position: center;
     border: 1.5px solid #fff;
   }
-  .notes-stats {
+  
+  .signout-card-btn {
     width: 100%;
-    display: flex;
-    justify-content: space-around;
-    border-top: 1px solid var(--glass-border);
-    padding-top: 4px;
-    font-size: 6.5px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 4px 0;
+    border-radius: 8px;
+    font-size: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, border-color 0.2s;
   }
-  .notes-stats strong { display: block; font-size: 8.5px; }
+  .signout-card-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: #fff;
+    transform: scale(1.02);
+  }
 
   .explanation-stack {
     flex: 1;
@@ -572,7 +633,6 @@
     overflow: hidden;
   }
 
-  /* Toast aviso */
   #toast {
     position: fixed;
     top: 38px;
@@ -614,8 +674,18 @@
     </div>
   </header>
 
-  <!-- Contenido Bento -->
-  <main class="bento-container">
+  <!-- ================= PANTALLA 1: TRANSICIÓN SIGN IN (FLOTANTE) ================= -->
+  <div id="welcomeScreen">
+    <div class="welcome-card" id="welcomeCard">
+      <div class="welcome-avatar"></div>
+      <h2>Moa</h2>
+      <p>@nyxess</p>
+      <button class="signin-btn" onclick="enterApp()">Sign In</button>
+    </div>
+  </div>
+
+  <!-- ================= PANTALLA 2: CONTENEDOR BENTO PRINCIPAL ================= -->
+  <main class="bento-container" id="mainContainer">
 
     <!-- 1. Menú Superior -->
     <nav class="nav-header">
@@ -628,21 +698,19 @@
       </div>
     </nav>
 
- 
-
-      <div class="search-and-thumbs">
-        <div class="search-box">
-          <input type="text" id="pinSearch" placeholder="Search..." onkeyup="filterSongs()">
-        </div>
-        <div class="mini-cards">
-          <div class="mini-thumb m1" onclick="showToast('Scar')"></div>
-          <div class="mini-thumb m2" onclick="showToast('Kim')"></div>
-        </div>
+    <div class="search-and-thumbs">
+      <div class="search-box">
+        <input type="text" id="pinSearch" placeholder="Search..." onkeyup="filterSongs()">
       </div>
+      <div class="mini-cards">
+        <div class="mini-thumb m1" onclick="showToast('Scar')"></div>
+        <div class="mini-thumb m2" onclick="showToast('Kim')"></div>
+      </div>
+    </div>
 
     <!-- 3. Fotografía Central + Widget Spotify -->
     <section class="center-hero-stage">
-      <div class="hero-photo-card"></div>
+      <div class="hero-photo-card" id="heroPhotoCard" style="background-image: var(--hero-photo);"></div>
 
       <aside class="spotify-float-widget">
         <div class="spotify-brand">
@@ -674,24 +742,19 @@
           <a class="notif-item" href="https://xat.me/Frieren" target="_blank" rel="noopener">
             <div><strong></strong><span class="sub">@Sinbad: Desgraciada</span></div>
           </a>
-          
         </div>
       </div>
 
-      <!-- Columna 2: Notes -->
+      <!-- Columna 2: Notes (Perfil con Sign Out) -->
       <div class="bento-col">
         <div class="col-label">HOME / <strong>PROFILE</strong></div>
         <div class="notes-card">
           <div class="notes-avatar"></div>
           <div>
-            <strong style="font-size:10px; display:block;" >Moa</strong>
-            <span style="font-size:9px; color:var(--text-muted);">@nyxess</span>
+            <strong style="font-size:9.5px; display:block;">Moa</strong>
+            <span style="font-size:8px; color:var(--text-muted);">@nyxess</span>
           </div>
-          <div class="notes-stats">
-            <div><strong>6,1K</strong>PINS</div>
-            <div><strong>1,5K</strong>FOLLOWERS</div>
-            <div><strong>6K+</strong>ABOUT</div>
-          </div>
+          <button class="signout-card-btn" onclick="signOutApp()">Sign Out</button>
         </div>
       </div>
 
@@ -700,15 +763,10 @@
         <div class="col-label">HOME / <strong>MESSAGE</strong></div>
         <div class="explanation-stack">
           <div class="msg-bubble-card">
-            <strong style="display:block; font-size:2px;"></strong>
             <span style="color:var(--text-muted);">Sometimes it's easier for people to be sad...</span>
           </div>
-          <div class="explanation-stack">
           <div class="msg-bubble-card">
-            <strong style="display:block; font-size:2px;"></strong>
             <span style="color:var(--text-muted);"> “If, for example, you come at four o’clock in the afternoon, then at three o’clock I shall begin to be happy..."</span>
-          </div>
-          
           </div>
         </div>
       </div>
@@ -724,17 +782,151 @@
 <div id="toast">Aviso</div>
 
 <script>
-  // 1. Lista de canciones interactivas
+  // EFECTO DE DESINTEGRACIÓN (Hacia afuera) al hacer Sign In
+  function triggerDisintegration(callback) {
+    const card = document.getElementById('welcomeCard');
+    const rect = card.getBoundingClientRect();
+    
+    card.style.opacity = '0';
+
+    const numParticles = 70;
+    for (let i = 0; i < numParticles; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle-out';
+
+      const startX = rect.left + Math.random() * rect.width;
+      const startY = rect.top + Math.random() * rect.height;
+
+      p.style.left = startX + 'px';
+      p.style.top = startY + 'px';
+
+      const size = Math.random() * 5 + 2;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * 180 + 40;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance - 60;
+
+      p.style.setProperty('--tx', tx + 'px');
+      p.style.setProperty('--ty', ty + 'px');
+
+      document.body.appendChild(p);
+
+      setTimeout(() => { p.remove(); }, 800);
+    }
+
+    setTimeout(callback, 50);
+  }
+
+  // EFECTO DE INTEGRACIÓN (Hacia adentro) al hacer Sign Out para reconstruir la tarjeta
+  function triggerIntegration(callback) {
+    const welcome = document.getElementById('welcomeScreen');
+    const card = document.getElementById('welcomeCard');
+    
+    welcome.style.display = 'flex';
+    card.style.opacity = '0';
+    const rect = card.getBoundingClientRect();
+
+    const numParticles = 70;
+    for (let i = 0; i < numParticles; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle-in';
+
+      const targetX = rect.left + Math.random() * rect.width;
+      const targetY = rect.top + Math.random() * rect.height;
+
+      p.style.left = targetX + 'px';
+      p.style.top = targetY + 'px';
+
+      const size = Math.random() * 5 + 2;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * 180 + 40;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance - 60;
+
+      p.style.setProperty('--tx', tx + 'px');
+      p.style.setProperty('--ty', ty + 'px');
+
+      document.body.appendChild(p);
+
+      setTimeout(() => { p.remove(); }, 800);
+    }
+
+    setTimeout(() => {
+      card.style.opacity = '1';
+      if (callback) callback();
+    }, 500);
+  }
+
+  // Función para entrar a la app (Sign In)
+  function enterApp() {
+    triggerDisintegration(() => {
+      const welcome = document.getElementById('welcomeScreen');
+      const main = document.getElementById('mainContainer');
+      
+      welcome.style.display = 'none';
+      main.classList.add('active');
+      startNotifLoop();
+    });
+  }
+
+  // Función para salir de la app (Sign Out)
+  function signOutApp() {
+    const main = document.getElementById('mainContainer');
+    
+    if (isPlaying) {
+      isPlaying = false;
+      audio.pause();
+    }
+    
+    // Transición suave para volver a la foto principal al salir
+    changeHeroImage('var(--hero-photo)');
+
+    main.classList.remove('active');
+    triggerIntegration();
+  }
+
+  // Función auxiliar para realizar un fundido (fade) sutil al cambiar la imagen central
+  function changeHeroImage(newImageCss) {
+    heroCard.style.opacity = '0'; // Se desvanece a negro/invisible brevemente
+    setTimeout(() => {
+      heroCard.style.backgroundImage = newImageCss;
+      heroCard.style.opacity = '1'; // Vuelve a aparecer suavemente con la nueva imagen
+    }, 400); // Mitad del tiempo de transición configurado en el CSS
+  }
+
+  // 1. Lista de canciones interactivas con imagen propia para el cambio central
   const tracks = [
-  { title: "Selfless", artist: "The Strokes", src: "https://www.dropbox.com/scl/fi/7ite659147mqi7gzpvbfk/The-Strokes-Selfless-Sub-Espa-ol-_HD_-128-kbps.mp3?rlkey=euisvoed681p1y24ka5wt3b9n&st=aayuqwz7&raw=1" },
-    { title: "Asuntos Pendientes", artist: "Airbag", src: "https://www.dropbox.com/scl/fi/fyg41ocsytk6yduiesedu/AIRBAG-Asuntos-Pendientes-Video-Lyrics.mp3?rlkey=wn3dde9gkwu766f10jlkp8b6y&st=ds1u4wke&raw=1" },
-    { title: "Eye in the Sky", artist: "The Alan Parsons Project", src: "https://www.dropbox.com/scl/fi/apasp6dtyx9bc6luenvy4/The-Alan-Parsons-Project-Eye-in-the-Sky-Official-Audio.mp3?rlkey=35319knw4irovkvy68ukovd4k&st=pxcnvsv4&raw=1" }
+    { 
+      title: "Selfless", 
+      artist: "The Strokes", 
+      src: "https://www.dropbox.com/scl/fi/7ite659147mqi7gzpvbfk/The-Strokes-Selfless-Sub-Espa-ol-_HD_-128-kbps.mp3?rlkey=euisvoed681p1y24ka5wt3b9n&st=aayuqwz7&raw=1",
+      image: "url('https://i.pinimg.com/1200x/46/28/ee/4628ee0cab596a54c9d82f44d207edb8.jpg')"
+    },
+    { 
+      title: "Asuntos Pendientes", 
+      artist: "Airbag", 
+      src: "https://www.dropbox.com/scl/fi/fyg41ocsytk6yduiesedu/AIRBAG-Asuntos-Pendientes-Video-Lyrics.mp3?rlkey=wn3dde9gkwu766f10jlkp8b6y&st=ds1u4wke&raw=1",
+      image: "url('https://i.pinimg.com/736x/d5/ad/67/d5ad675d52ebb6c590257525ede707a1.jpg')"
+    },
+    { 
+      title: "Eye in the Sky", 
+      artist: "The Alan Parsons Project", 
+      src: "https://www.dropbox.com/scl/fi/apasp6dtyx9bc6luenvy4/The-Alan-Parsons-Project-Eye-in-the-Sky-Official-Audio.mp3?rlkey=35319knw4irovkvy68ukovd4k&st=pxcnvsv4&raw=1",
+      image: "url('https://i.pinimg.com/736x/c5/55/7b/c5557bce71d31d2d71fbf7b98af931b8.jpg')"
+    }
   ];
 
   let activeIdx = -1;
   let isPlaying = false;
   const audio = document.getElementById('bgMusic');
   const listEl = document.getElementById('spotifyList');
+  const heroCard = document.getElementById('heroPhotoCard');
 
   function renderTracks(filter = "") {
     listEl.innerHTML = "";
@@ -762,6 +954,7 @@
     if (activeIdx === index && isPlaying) {
       isPlaying = false;
       audio.pause();
+      changeHeroImage('var(--hero-photo)'); // Vuelve a la foto principal de forma sutil al pausar
       showToast(`Pausado: ${tracks[index].title}`);
     } else {
       activeIdx = index;
@@ -770,6 +963,8 @@
         audio.src = tracks[index].src;
         audio.play();
       }
+      // Cambia la imagen central aplicando el fundido sutil (fade)
+      changeHeroImage(tracks[index].image);
       showToast(`♫ ${tracks[index].title} - ${tracks[index].artist}`);
     }
     renderTracks(document.getElementById('pinSearch').value.toLowerCase());
@@ -812,9 +1007,8 @@
     setTimeout(() => t.classList.remove('show'), 2200);
   }
 
-  // Inicializar lista y loop de notificaciones
+  // Inicializar lista de canciones
   renderTracks();
-  startNotifLoop();
 </script>
 
 </body>
