@@ -1,4 +1,92 @@
 <!DOCTYPE html>
+  <script>
+    function handleContainerScaling() {
+      const container = document.querySelector('.banner');
+      if (!container) return;
+
+      let wrapper = document.querySelector('.container-wrapper');
+      if (!wrapper) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'container-wrapper';
+        container.parentNode.insertBefore(wrapper, container);
+        wrapper.appendChild(container);
+
+        const style = document.createElement('style');
+        style.textContent = `
+          .container-wrapper {
+            width: 100vw;
+            height: 100dvh;
+            overflow: hidden;
+            position: relative;
+            display: grid;
+            place-items: center;
+          }
+          .banner.scaled {
+            transform-origin: center center;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      function checkAndFreezeScaling() {
+        const baseWidth = 550;
+        const baseHeight = 550;
+        const padding = 20;
+
+        const viewportWidth = window.innerWidth - padding;
+        const viewportHeight = window.innerHeight - padding;
+
+        const scaleX = viewportWidth / baseWidth;
+        const scaleY = viewportHeight / baseHeight;
+        const scaleFactor = Math.min(scaleX, scaleY, 1);
+
+        if (scaleFactor < 1) {
+          container.style.transform = `scale(${scaleFactor})`;
+          container.classList.add('scaled');
+        } else {
+          container.style.transform = 'scale(1)';
+          container.classList.remove('scaled');
+        }
+      }
+
+      let resizeTimeout;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(checkAndFreezeScaling, 50);
+      });
+
+      window.addEventListener('orientationchange', function() {
+        setTimeout(checkAndFreezeScaling, 100);
+      });
+
+      setTimeout(checkAndFreezeScaling, 50);
+      setInterval(checkAndFreezeScaling, 500);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(handleContainerScaling, 100);
+    });
+
+    window.addEventListener('load', handleContainerScaling);
+  </script>
+
+
+  <script>
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault(); 
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (
+                e.ctrlKey && (e.key === 'u' || e.key === 'U') ||  
+                e.key === 'F12' ||                             
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||     
+                (e.metaKey && e.altKey && e.key === 'I')          
+            ) {
+                e.preventDefault(); 
+            }
+        });
+</script>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -84,7 +172,7 @@
   /* --- BARRA SUPERIOR MÁS GRUESA --- */
   .top-credits-bar {
     position: relative;
-    height: 44px;
+    height: 50px;
     width: 100%;
     background: var(--top-strip);
     border-bottom: 1px solid var(--glass-border);
@@ -282,7 +370,7 @@
   /* Franja de Search y miniaturas bajada para evitar taparse */
   .search-and-thumbs {
     width: 100%;
-    margin-top: 14px;
+    margin-top: 74px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -474,7 +562,7 @@
     gap: 8px;
     height: auto;
     align-items: stretch;
-    margin-bottom: 4px;
+    margin-bottom: 35px;
   }
 
   .bento-col {
@@ -1008,6 +1096,8 @@
 
   renderTracks();
 </script>
+
+  
 
 </body>
 </html>
