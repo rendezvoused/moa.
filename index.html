@@ -1012,4 +1012,77 @@
 </script>
 
 </body>
+</html>');
+      pill.className = 'song-pill' + (isCurrent ? ' playing' : '');
+      pill.innerHTML = `
+        <div class="sp-cover">♫</div>
+        <div class="sp-meta">
+          <strong>${t.title}</strong>
+          <span>${t.artist}</span>
+        </div>
+        <div class="sp-play-ico">${isCurrent ? '⏸' : '▶'}</div>
+      `;
+      pill.onclick = () => playTrack(i);
+      listEl.appendChild(pill);
+    });
+  }
+
+  function playTrack(index) {
+    if (activeIdx === index && isPlaying) {
+      isPlaying = false;
+      audio.pause();
+      changeHeroImage('var(--hero-photo)');
+      showToast(`Pausado: ${tracks[index].title}`);
+    } else {
+      activeIdx = index;
+      isPlaying = true;
+      if (tracks[index].src) {
+        audio.src = tracks[index].src;
+        audio.play();
+      }
+      changeHeroImage(tracks[index].image);
+      showToast(`♫ ${tracks[index].title} - ${tracks[index].artist}`);
+    }
+    renderTracks(document.getElementById('pinSearch').value.toLowerCase());
+  }
+
+  function filterSongs() {
+    const q = document.getElementById('pinSearch').value.toLowerCase();
+    renderTracks(q);
+  }
+
+  function startNotifLoop() {
+    const items = document.querySelectorAll('#notifStack .notif-item');
+    if (!items.length) return;
+
+    function runCycle() {
+      items.forEach(el => el.classList.remove('visible'));
+      items.forEach((el, idx) => {
+        setTimeout(() => {
+          el.classList.add('visible');
+        }, 350 + idx * 750);
+      });
+    }
+
+    runCycle();
+    setInterval(runCycle, 6500);
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
+    document.getElementById('themeBtn').textContent = isLight ? '☀' : '☾';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  renderTracks();
+</script>
+
+</body>
 </html>
