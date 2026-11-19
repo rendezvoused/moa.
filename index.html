@@ -380,7 +380,6 @@
     border: 1px solid var(--glass-border);
     position: relative;
     opacity: 1;
-    /* Transición suave y lenta de opacidad (desvanecimiento sutil) */
     transition: opacity 0.8s ease-in-out;
   }
 
@@ -655,6 +654,49 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+
+  /* =========================================================
+     ESCALADO PROPORCIONAL SOLO PARA PC / PANTALLAS GRANDES
+     (La versión móvil < 768px permanece 100% intacta)
+     ========================================================= */
+  @media (min-width: 768px) {
+    .top-bar-inner {
+      max-width: 600px;
+    }
+
+    .welcome-card {
+      transform: scale(1.22);
+      animation: floatCardDesktop 4s ease-in-out infinite;
+    }
+
+    @keyframes floatCardDesktop {
+      0%, 100% { transform: scale(1.22) translateY(0px); }
+      50% { transform: scale(1.22) translateY(-8px); }
+    }
+
+    .bento-container {
+      width: 480px;
+      max-width: 480px;
+      height: calc((100dvh - 30px) / 1.22);
+      max-height: 760px;
+      flex: none;
+      margin: auto;
+      transform: scale(1.18);
+      transform-origin: center center;
+    }
+
+    .bento-container.active {
+      transform: scale(1.22);
+    }
+
+    .center-hero-stage {
+      max-height: 44%;
+    }
+
+    .bottom-bento-grid {
+      height: 23%;
+    }
+  }
 </style>
 </head>
 <body>
@@ -884,23 +926,20 @@
       audio.pause();
     }
     
-    // Transición suave para volver a la foto principal al salir
     changeHeroImage('var(--hero-photo)');
 
     main.classList.remove('active');
     triggerIntegration();
   }
 
-  // Función auxiliar para realizar un fundido (fade) sutil al cambiar la imagen central
   function changeHeroImage(newImageCss) {
-    heroCard.style.opacity = '0'; // Se desvanece a negro/invisible brevemente
+    heroCard.style.opacity = '0';
     setTimeout(() => {
       heroCard.style.backgroundImage = newImageCss;
-      heroCard.style.opacity = '1'; // Vuelve a aparecer suavemente con la nueva imagen
-    }, 400); // Mitad del tiempo de transición configurado en el CSS
+      heroCard.style.opacity = '1';
+    }, 400);
   }
 
-  // 1. Lista de canciones interactivas con imagen propia para el cambio central
   const tracks = [
     { 
       title: "Selfless", 
@@ -936,83 +975,6 @@
       }
       const isCurrent = (i === activeIdx && isPlaying);
       const pill = document.createElement('div');
-      pill.className = 'song-pill' + (isCurrent ? ' playing' : '');
-      pill.innerHTML = `
-        <div class="sp-cover">♫</div>
-        <div class="sp-meta">
-          <strong>${t.title}</strong>
-          <span>${t.artist}</span>
-        </div>
-        <div class="sp-play-ico">${isCurrent ? '⏸' : '▶'}</div>
-      `;
-      pill.onclick = () => playTrack(i);
-      listEl.appendChild(pill);
-    });
-  }
-
-  function playTrack(index) {
-    if (activeIdx === index && isPlaying) {
-      isPlaying = false;
-      audio.pause();
-      changeHeroImage('var(--hero-photo)'); // Vuelve a la foto principal de forma sutil al pausar
-      showToast(`Pausado: ${tracks[index].title}`);
-    } else {
-      activeIdx = index;
-      isPlaying = true;
-      if (tracks[index].src) {
-        audio.src = tracks[index].src;
-        audio.play();
-      }
-      // Cambia la imagen central aplicando el fundido sutil (fade)
-      changeHeroImage(tracks[index].image);
-      showToast(`♫ ${tracks[index].title} - ${tracks[index].artist}`);
-    }
-    renderTracks(document.getElementById('pinSearch').value.toLowerCase());
-  }
-
-  function filterSongs() {
-    const q = document.getElementById('pinSearch').value.toLowerCase();
-    renderTracks(q);
-  }
-
-  // Animación en Loop infinito para las notificaciones
-  function startNotifLoop() {
-    const items = document.querySelectorAll('#notifStack .notif-item');
-    if (!items.length) return;
-
-    function runCycle() {
-      items.forEach(el => el.classList.remove('visible'));
-      items.forEach((el, idx) => {
-        setTimeout(() => {
-          el.classList.add('visible');
-        }, 350 + idx * 750);
-      });
-    }
-
-    runCycle();
-    setInterval(runCycle, 6500);
-  }
-
-  // 2. Switch Dark / Light Mode
-  function toggleTheme() {
-    document.body.classList.toggle('light-theme');
-    const isLight = document.body.classList.contains('light-theme');
-    document.getElementById('themeBtn').textContent = isLight ? '☀' : '☾';
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2200);
-  }
-
-  // Inicializar lista de canciones
-  renderTracks();
-</script>
-
-</body>
-</html>');
       pill.className = 'song-pill' + (isCurrent ? ' playing' : '');
       pill.innerHTML = `
         <div class="sp-cover">♫</div>
