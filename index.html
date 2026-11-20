@@ -169,13 +169,13 @@
     transition: background 0.35s ease;
   }
 
-  /* --- BARRA SUPERIOR MÁS GRUESA --- */
+  /* --- BARRA DE CRÉDITOS ABAJO --- */
   .top-credits-bar {
     position: relative;
     height: 50px;
     width: 100%;
     background: var(--top-strip);
-    border-bottom: 1px solid var(--glass-border);
+    border-top: 1px solid var(--glass-border);
     display: flex;
     justify-content: center;
     z-index: 20;
@@ -234,7 +234,7 @@
      ========================================================= */
   #welcomeScreen {
     position: absolute;
-    inset: 44px 0 0 0;
+    inset: 0 0 50px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -348,7 +348,7 @@
     width: 100%;
     max-width: 480px;
     margin: 0 auto;
-    padding: 16px 14px 22px;
+    padding: 16px 14px 14px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -367,10 +367,10 @@
     pointer-events: auto;
   }
 
-  /* Franja de Search y miniaturas bajada para evitar taparse */
+  /* Franja de Search y miniaturas */
   .search-and-thumbs {
     width: 100%;
-    margin-top: 74px;
+    margin-top: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -562,7 +562,7 @@
     gap: 8px;
     height: auto;
     align-items: stretch;
-    margin-bottom: 35px;
+    margin-bottom: 10px;
   }
 
   .bento-col {
@@ -696,7 +696,7 @@
 
   #toast {
     position: fixed;
-    top: 52px;
+    top: 16px;
     left: 50%;
     transform: translateX(-50%) translateY(-40px);
     background: rgba(18, 16, 14, 0.94);
@@ -739,7 +739,7 @@
     .bento-container {
       width: 480px;
       max-width: 480px;
-      height: calc((100dvh - 44px) / 1.22);
+      height: calc((100dvh - 50px) / 1.22);
       max-height: 760px;
       flex: none;
       margin: auto;
@@ -766,17 +766,6 @@
 <div class="app-viewport">
   <div class="bg-blurred-photo"></div>
   <div class="bg-tint-layer"></div>
-
-  <!-- Barra Superior -->
-  <header class="top-credits-bar">
-    <div class="top-bar-inner">
-      <div class="credit-left">
-        <span class="pin-badge">®</span>
-        <span> Headache</span>
-      </div>
-      <button class="theme-switch-btn" onclick="toggleTheme()" id="themeBtn"> ☽ </button>
-    </div>
-  </header>
 
   <!-- ================= PANTALLA 1: TRANSICIÓN SIGN IN (FLOTANTE) ================= -->
   <div id="welcomeScreen">
@@ -867,6 +856,17 @@
     </section>
 
   </main>
+
+  <!-- Barra de Créditos Inferior -->
+  <footer class="top-credits-bar">
+    <div class="top-bar-inner">
+      <div class="credit-left">
+        <span class="pin-badge">®</span>
+        <span> Headache</span>
+      </div>
+      <button class="theme-switch-btn" onclick="toggleTheme()" id="themeBtn"> ☽ </button>
+    </div>
+  </footer>
 
   <!-- Reproductor HTML5 -->
   <audio id="bgMusic" preload="none"></audio>
@@ -1096,8 +1096,6 @@
 
   renderTracks();
 </script>
-
-  
 
 </body>
 </html>
